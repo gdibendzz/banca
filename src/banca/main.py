@@ -1,6 +1,5 @@
 import models.conto_corrente as cc
 import utils.method_utils as mu
-#commit
 
 numeroc=mu.generatore_numero_conto()
 cc1=cc.ContoCorrente("Gianmarco Di Benedetto", next(numeroc))
