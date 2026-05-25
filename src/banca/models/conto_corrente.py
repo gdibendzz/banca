@@ -42,3 +42,5 @@ class ContoCorrente:
     
     def cerca_da_numero(self, numero):
         return True if numero == self.numeroConto else False
+
+#Ciao
