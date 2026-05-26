@@ -17,13 +17,14 @@ if cc_founded is None:
     print("Non esiste alcun conto con questo numero")
 else:
     op=""
-    while op != 5:
+    while op != 6:
         op=int(input("Seleziona l'operazione che vuoi effettuare \n" \
         "1. Per depositare \n" \
         "2. Per prelevare \n" \
         "3. Per mostrare il saldo \n" \
         "4. Per mostrare i movimenti \n" \
-        "5. Per uscire\n"))
+        "5. Per creare altri conti \n"  \
+        "6. Per uscire\n"))
         match op:
             case 1:
                 s=int(input("Inserire la somma da depositare: "))
@@ -35,10 +36,21 @@ else:
                 cc1.mostra_saldo()
             case 4:
                 cc1.mostra_movimenti()
+                numDepositi=cc1.conta_depositi()
+                numPrelievi=cc1.conta_prelievi()
+                print("Numero depositi:", numDepositi)
+                print("Numero prelievi:", numPrelievi)
             case 5:
+                numero=int(input("Inserire numero di conti da creare: "))
+                list_cc=[]
+                for x in range(numero):
+                    ni=str(input("Inserire il nome intestatario: "))
+                    nc=int(input("Inserire il numero conto: "))
+                    di=float(input("Inserire il deposito iniziale: "))
+                    conto_c=cc.ContoCorrente(ni, nc)
+                    conto_c.deposita(di)
+                    conto_c.mostra_riepilogo()
+                    list_cc.append(conto_c)
                 break
             case _:
                 pass
-
-            #ciao Gianmarco, antonio no perche sta qua test
-            
