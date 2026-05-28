@@ -1,7 +1,11 @@
+import random
+
 class ContoCorrente:
 
     def __init__(self, intestatario, numeroConto):
         self.saldo = 0
+        self.pin = random.randint(1111, 9999)
+        print(f" per info Conto: {numeroConto}: {self.pin}")
         self.bloccato = False
         self.intestatario = intestatario
         self.numeroConto = numeroConto
@@ -87,4 +91,10 @@ class ContoCorrente:
         return cp
     
     def findByWord(self, word):
-        pass
+      return list(filter(lambda x : word.lower() in  x.lower(), self.movimenti))
+    
+
+    def __str__(self):
+        blocked="true" if self.bloccato else "false"
+
+        return f"Intestatario: {self.intestatario}; Numero conto: {self.numeroConto} Saldo: {self.saldo}; Fido: {self.saldo}, Bloccato: {blocked}"
