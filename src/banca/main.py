@@ -1,4 +1,5 @@
 import models.conto_corrente as cc
+import models.conto_cointestato as cci
 import utils.file_utils as fu
 import utils.method_utils as mu
 
@@ -49,7 +50,7 @@ try:
             cc_founded.blocca_conto()
             
 
-        while op != 9 and not cc_founded.bloccato:
+        while op != 10 and not cc_founded.bloccato:
             try:
                 op=int(input("Seleziona l'operazione che vuoi effettuare \n" \
                 "1. Per depositare \n" \
@@ -60,7 +61,8 @@ try:
                 "6. Per cercare i movimenti \n"  \
                 "7. Salva i movimenti \n"  \
                 "8. Classifica dei saldi \n"  \
-                "9. Per uscire\n"))
+                "9. Statistiche conto \n"  \
+                "10. Per uscire\n"))
                 if op < 0:
                         raise ValueError
                 match op:
@@ -81,20 +83,37 @@ try:
                     case 5:
                         numero=int(input("Inserire numero di conti da creare: "))
                         for x in range(numero):
-                            ni=str(input("Inserire il nome intestatario: "))
+                            ni=str(input("\nInserire il nome intestatario: "))
                             nc=int(input("Inserire il numero conto: "))
                             di=float(input("Inserire il deposito iniziale: "))
-                            conto_c=cc.ContoCorrente(ni, nc)
+
+                            is_cointestato = input("Il conto è cointestato? S/N: ")
+
+                            if is_cointestato.upper() == "S":
+                                list_coint = []
+                                numero=int(input("Inserire numero di cointestatari: "))
+                                for x in range(numero):
+                                    nci=str(input("Inserire il nome del cointestatario: "))
+                                    list_coint.append(nci)
+                                conto_c=cci.ContoCointestato(ni, nc, list_coint)
+
+                            else:
+                                conto_c=cc.ContoCorrente(ni, nc)
+                            
                             fu.write(conto_c.__str__(), f"{conto_c.numeroConto}.txt", "a")
                             conto_c.deposita(di)
+                            print("\n")
                             conto_c.mostra_riepilogo()
                             list_cc.append(conto_c)
+
+
+                           
                     
                     case 6:
                         search = input("Inserire la parola chiave: ")
                         mov_list = cc_founded.findByWord(search)
 
-                        if(len(mov_list) == 0):
+                        if len(mov_list) == 0:
                             print("La lista è vuota")
                         else:
                             print("Elenco: ")
@@ -116,7 +135,14 @@ try:
                         print ("Lista di conti ora ordinati: ")
                         for x in list_cc:
                             print(x.__str__())
-
+                    case 9:
+                        print("\n\n")
+                        print(f"Totale prelevato: {cc_founded.totale_operazione("Prelievo")}")
+                        print(f"Totale depositato: {cc_founded.totale_operazione("Deposito")}")
+                        mm = cc_founded.max_movimento()
+                        print(f"Movimento più alto: {mm if mm is not None else "Nessun Movimento Effettuato"}")
+                        print(f"Numero totale di operazioni : {cc_founded.conta_depositi() + cc_founded.conta_prelievi()}")
+                        print("\n\n")
                     case _:
                         pass
             except ValueError:    
