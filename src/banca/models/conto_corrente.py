@@ -35,13 +35,15 @@ class ContoCorrente:
                 )
             elif differenza < -self.fido:
                 print("Non puoi prelevare più del fido")
-            else:
+            elif importo % 10 == 0 or importo % 20 == 0:
                 self.saldo -= importo + self.commissione
                 self.prelievo_giornaliero -= importo
-                self.movimenti.append(f"Prelievo di {importo} euro, data movimento: {datetime.now()}")
+                self.movimenti.append(f"Prelievo di {importo} euro")
                 self.movimenti.append(
-                    f"Commissione applicata di {self.commissione} euro, data movimento: {datetime.now()}"
+                    f"Commissione applicata di {self.commissione} euro"
                 )
+            else:
+                print("Impossibile effettuare la seguente operazione")
 
     def mostra_saldo(self):
         print("Saldo attuale:", self.saldo)
@@ -54,17 +56,17 @@ class ContoCorrente:
         else:
             print("Nessun movimento da visualizzare")
 
-    def bonifico(self, conto_destinazione, importo):
+    def bonifico(self, conto_destinazione, importo, causale):
         if self.bloccato == True:
             print("Conto bloccato. Impossibile effettuare il bonifico")
         else:
             self.preleva(importo)
             self.movimenti.append(
-                f"Bonifico effettuato a {conto_destinazione.numeroConto}, data movimento: {datetime.now()}"
+                f"Bonifico effettuato a {conto_destinazione.numeroConto} - Causale: {causale}"
             )
             conto_destinazione.deposita(importo)
             conto_destinazione.movimenti.append(
-                f"Bonifico ricevuto da {self.numeroConto}, data movimento: {datetime.now()}"
+                f"Bonifico ricevuto da {self.numeroConto} - Causale: {causale}"
             )
 
     def cerca_da_numero(self, numero):

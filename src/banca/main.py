@@ -88,10 +88,12 @@ try:
                         for x in range(numero):
                             ni=str(input("\nInserire il nome intestatario: "))
                             nc=int(input("Inserire il numero conto: "))
+                            if len(list_cc) > 0:
+                                for lcc in list_cc:
+                                    if lcc.cerca_da_numero(nc):
+                                        raise Exception("Esiste già questo numero conto.")
                             di=float(input("Inserire il deposito iniziale: "))
-
                             is_cointestato = input("Il conto è cointestato? S/N: ")
-
                             if is_cointestato.upper() == "S":
                                 list_coint = []
                                 numero=int(input("Inserire numero di cointestatari: "))
@@ -99,23 +101,16 @@ try:
                                     nci=str(input("Inserire il nome del cointestatario: "))
                                     list_coint.append(nci)
                                 conto_c=cci.ContoCointestato(ni, nc, list_coint)
-
                             else:
                                 conto_c=cc.ContoCorrente(ni, nc)
-                            
                             fu.write(conto_c.__str__(), f"{conto_c.numeroConto}.txt", "a")
                             conto_c.deposita(di)
                             print("\n")
                             conto_c.mostra_riepilogo()
                             list_cc.append(conto_c)
-
-
-                           
-                    
                     case 6:
                         search = input("Inserire la parola chiave: ")
                         mov_list = cc_founded.findByWord(search)
-
                         if len(mov_list) == 0:
                             print("La lista è vuota")
                         else:
@@ -148,32 +143,29 @@ try:
                         print("\n\n")
 
                     case 10:
-                           print ("Lista conti iniziali:\n\n")
-
-                           for x in list_cc:
-                               print(x.__str__())
-                           control = 0
-                           input_num = int(input("Inserire il numero del conto da eliminare: "))
-                           if input_num < 0:
-                                raise ValueError 
-
-                           for x in list_cc:
+                        print ("Lista conti iniziali:\n\n")
+                        for x in list_cc:
+                            print(x.__str__())
+                        control = 0
+                        input_num = int(input("Inserire il numero del conto da eliminare: "))
+                        if input_num < 0:
+                            raise ValueError 
+                        for x in list_cc:
                             if input_num == x.numeroConto:
                                 if x.saldo != 0:
-                                  list_cc.remove(x)
-                                  control=1
-                                  print("Conto eliminato")
+                                    list_cc.remove(x)
+                                    control=1
+                                    print("Conto eliminato")
                                 else:
                                     print("Impossibile eliminare un conto con saldo diverso da 0")  
                                     control == 1 
                             if control == 0:
                                 print("Non esiste alcun conto con questo numero")
 
-                           print ("Lista conti dopo tentativo  di elimninazione:\n\n")
+                        print ("Lista conti dopo tentativo  di elimninazione:\n\n")
 
-                           for x in list_cc:
-                               print(x.__str__())
-
+                        for x in list_cc:
+                            print(x.__str__())
                     case 11: 
                         print ("SALDO PRIMA del tentativo di addebito automatico:  \n\n")
                         print(cc_founded.__str__())
@@ -192,14 +184,10 @@ try:
 
                         print ("SALDO DOPO tentativo diaddebito automatico:  \n\n")
                         print(cc_founded.__str__())
-                        
-
-
                     case _:
                         print("USCITA DAL SOFTWARE")
                         pass
-                    
             except ValueError:    
-                    print("Il numero del conto deve essere un numero positivo\n \n")
+                print("Il numero del conto deve essere un numero positivo\n \n")
 except ValueError:    
     print("Il numero del conto deve essere un numero positivo \n \n")

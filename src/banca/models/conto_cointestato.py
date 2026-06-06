@@ -10,7 +10,7 @@ class ContoCointestato(c.ContoCorrente):
     def __str__(self):
         blocked = "true" if self.bloccato else "false"
 
-        return f"Intestatari: {self.intestatario}, {", ".join(self.cointestatari)}; Numero conto: {self.numeroConto} Saldo: {self.saldo}; Fido: {self.saldo}, Bloccato: {blocked}"
+        return f"Intestatari: {self.intestatario}, {', '.join(self.cointestatari)}; Numero conto: {self.numeroConto} Saldo: {self.saldo}; Fido: {self.saldo}, Bloccato: {blocked}"
 
     def mostra_riepilogo(self):
         blocked = "Sì" if self.bloccato else "No"
@@ -18,7 +18,7 @@ class ContoCointestato(c.ContoCorrente):
         int_list.append(self.intestatario)
 
         print(
-            f"Intestatari: {self.intestatario}, {", ".join(self.cointestatari)}; Numero conto: {self.numeroConto} Saldo: {self.saldo}; Fido: {self.saldo}, Bloccato: {blocked}"
+            f"Intestatari: {self.intestatario}, {', '.join(self.cointestatari)}; Numero conto: {self.numeroConto} Saldo: {self.saldo}; Fido: {self.saldo}, Bloccato: {blocked}"
         )
         self.mostra_movimenti()
         print(
