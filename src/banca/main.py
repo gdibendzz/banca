@@ -50,7 +50,7 @@ try:
             cc_founded.blocca_conto()
             
 
-        while op != 10 and not cc_founded.bloccato:
+        while op != 12 and not cc_founded.bloccato:
             try:
                 op=int(input("Seleziona l'operazione che vuoi effettuare \n" \
                 "1. Per depositare \n" \
@@ -62,7 +62,10 @@ try:
                 "7. Salva i movimenti \n"  \
                 "8. Classifica dei saldi \n"  \
                 "9. Statistiche conto \n"  \
-                "10. Per uscire\n"))
+                "10. Elimina un conto \n"  \
+                "11. Scala addebiti automatici \n"  \
+                "12. Per uscire\n"))
+
                 if op < 0:
                         raise ValueError
                 match op:
@@ -143,8 +146,59 @@ try:
                         print(f"Movimento più alto: {mm if mm is not None else "Nessun Movimento Effettuato"}")
                         print(f"Numero totale di operazioni : {cc_founded.conta_depositi() + cc_founded.conta_prelievi()}")
                         print("\n\n")
+
+                    case 10:
+                           print ("Lista conti iniziali:\n\n")
+
+                           for x in list_cc:
+                               print(x.__str__())
+                           control = 0
+                           input_num = int(input("Inserire il numero del conto da eliminare: "))
+                           if input_num < 0:
+                                raise ValueError 
+
+                           for x in list_cc:
+                            if input_num == x.numeroConto:
+                                if x.saldo != 0:
+                                  list_cc.remove(x)
+                                  control=1
+                                  print("Conto eliminato")
+                                else:
+                                    print("Impossibile eliminare un conto con saldo diverso da 0")  
+                                    control == 1 
+                            if control == 0:
+                                print("Non esiste alcun conto con questo numero")
+
+                           print ("Lista conti dopo tentativo  di elimninazione:\n\n")
+
+                           for x in list_cc:
+                               print(x.__str__())
+
+                    case 11: 
+                        print ("SALDO PRIMA del tentativo di addebito automatico:  \n\n")
+                        print(cc_founded.__str__())
+                        print("\n\n")
+                        importo = float(input("Inserire l'importo dell'addebito automatico: "))
+                        descrizione = input("Inserire la descrizione dell'addebito automatico: ")
+                        if importo < 0:
+                            raise ValueError
+                        if cc_founded.saldo < importo:
+                            print("Saldo insufficiente per effettuare l'addebito automatico")
+                            cc_founded.blocca_conto()
+                            print("Conto bloccato")
+                        else:                            
+                            cc_founded.addebito_automatico(importo, descrizione)
+                            print("Addebito automatico effettuato con successo")
+
+                        print ("SALDO DOPO tentativo diaddebito automatico:  \n\n")
+                        print(cc_founded.__str__())
+                        
+
+
                     case _:
+                        print("USCITA DAL SOFTWARE")
                         pass
+                    
             except ValueError:    
                     print("Il numero del conto deve essere un numero positivo\n \n")
 except ValueError:    

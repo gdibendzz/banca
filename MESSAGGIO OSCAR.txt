@@ -1,0 +1,20 @@
+Ciao ragazzi
+
+solo per indicare che questo esercizio che mi è uscito (10)
+Crea un programma completo con: 
+****************************************************************************************************************
+creazione conti 
+deposito 
+prelievo 
+bonifico 
+storico movimenti 
+blocco conto 
+ricerca conto per numero 
+menu principale 
+Tutti i conti devono essere gestiti in memoria, usando solo classi e dizionari. 
+****************************************************************************************************************
+In pratica chiede di fare quello che abbiamo gia fatto ossia menu', tutte le operazioni che già ci sono etc 
+L'unica differenza è che noi usiamo liste e non dizionari. Dovremmo rifare gran parte della classe conto corrente e main
+per implementare eventualmente che lavora a dizionario e non a liste 
+
+Magari parliamone direttamente MARTEDI 

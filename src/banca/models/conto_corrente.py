@@ -1,4 +1,5 @@
 import random
+from datetime import datetime
 
 
 class ContoCorrente:
@@ -20,7 +21,7 @@ class ContoCorrente:
             print("Non si può depositare un importo negativo o zero")
         else:
             self.saldo += importo
-            self.movimenti.append(f"Deposito di {importo} euro")
+            self.movimenti.append(f"Deposito di {importo} euro, data movimento: {datetime.now()}")
 
     def preleva(self, importo):
         if self.bloccato == True:
@@ -37,9 +38,9 @@ class ContoCorrente:
             else:
                 self.saldo -= importo + self.commissione
                 self.prelievo_giornaliero -= importo
-                self.movimenti.append(f"Prelievo di {importo} euro")
+                self.movimenti.append(f"Prelievo di {importo} euro, data movimento: {datetime.now()}")
                 self.movimenti.append(
-                    f"Commissione applicata di {self.commissione} euro"
+                    f"Commissione applicata di {self.commissione} euro, data movimento: {datetime.now()}"
                 )
 
     def mostra_saldo(self):
@@ -59,11 +60,11 @@ class ContoCorrente:
         else:
             self.preleva(importo)
             self.movimenti.append(
-                f"Bonifico effettuato a {conto_destinazione.numeroConto}"
+                f"Bonifico effettuato a {conto_destinazione.numeroConto}, data movimento: {datetime.now()}"
             )
             conto_destinazione.deposita(importo)
             conto_destinazione.movimenti.append(
-                f"Bonifico ricevuto da {self.numeroConto}"
+                f"Bonifico ricevuto da {self.numeroConto}, data movimento: {datetime.now()}"
             )
 
     def cerca_da_numero(self, numero):
@@ -128,6 +129,11 @@ class ContoCorrente:
                     max_op = op_sum
                     op = m
         return op
+
+    def addebito_automatico(self,importo, descrizione):
+        self.saldo -= importo
+        self.movimenti.append(f"Addebito automatico di {importo} euro per {descrizione}, data movimento: {datetime.now()}")
+
 
     def __str__(self):
         blocked = "true" if self.bloccato else "false"
