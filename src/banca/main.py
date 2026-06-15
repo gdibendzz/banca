@@ -2,6 +2,7 @@ from unittest import case
 
 import models.conto_corrente as cc
 import models.conto_cointestato as cci
+import models.cliente as cl
 import utils.file_utils as fu
 
 '''
@@ -21,12 +22,10 @@ def cerca_conto(numero, lista: list[cc.ContoCorrente]):
             conto_trovato=l
     return conto_trovato
 
-
-
 list_cc=[]
-
+clienti=[]
 op = 0
-while op != 5:
+while op != 6:
     try:
         op = int(
               input(
@@ -35,7 +34,8 @@ while op != 5:
                  "2. Lista Conti \n"
                  "3. Accedi per operazioni \n"
                  "4. Elimina Conto \n"
-                 "5. Esci\n"
+                 "5. Ricerca cliente \n"
+                 "6. Esci\n"
                 )
             )
         if op < 0:
@@ -45,17 +45,18 @@ while op != 5:
             case 1:
                 numero=int(input("Inserire numero di conti da creare: "))
                 for x in range(numero):
-                            ni=str(input("\nInserire il nome intestatario: "))
-                            nc=None
+                            nome_cliente=input("Inserire nome del cliente: ")
+                            cognome_cliente=input("Inserire cognome del cliente: ")
+                            nc = None
                             contodiverso = False
                             while contodiverso == False:
-                                nc=int(input("Inserire il numero conto: "))
+                                nc = int(input("Inserire il numero conto: "))
                                 if len(list_cc) > 0:
-                                    for lcc in list_cc:
-                                        if lcc.cerca_da_numero(nc):
-                                           print("Esiste già questo numero conto.")
-                                        else:
-                                            contodiverso = True
+                                    nuova_lista = list(filter(lambda x : x.cerca_da_numero(nc), list_cc))
+                                    if len(nuova_lista) > 0:
+                                        print("Esiste già questo numero conto.")
+                                    else:
+                                        contodiverso = True
                                 else:
                                     contodiverso = True
 
@@ -67,14 +68,16 @@ while op != 5:
                                 for x in range(numero):
                                     nci=str(input("Inserire il nome del cointestatario: "))
                                     list_coint.append(nci)
-                                conto_c=cci.ContoCointestato(ni, nc, list_coint)
+                                conto_c=cci.ContoCointestato(nome_cliente + " " + cognome_cliente, nc, list_coint)
                             else:
-                                conto_c=cc.ContoCorrente(ni, nc)
+                                conto_c=cc.ContoCorrente(nome_cliente + " " + cognome_cliente, nc)
                             fu.write(conto_c.__str__(), f"{conto_c.numeroConto}.txt", "a")
                             conto_c.deposita(di)
                             print("\n")
                             conto_c.mostra_riepilogo()
                             list_cc.append(conto_c)
+                            cliente=cl.Cliente(nome_cliente, cognome_cliente, conto_c)
+                            clienti.append(cliente)
             case 2:
                 print ("Lista di conti non ordinati: ")
                 for x in list_cc:
@@ -91,10 +94,7 @@ while op != 5:
                     if num < 0:
                         raise ValueError
 
-                    cc_founded=None
-                    for x in list_cc:
-                        if x.cerca_da_numero(num) == True:
-                            cc_founded=x
+                    cc_founded = cerca_conto(num, list_cc)
                     if cc_founded is None:
                         print("Non esiste alcun conto con questo numero")
                     else:
@@ -161,21 +161,21 @@ while op != 5:
                                         else:
                                             print("Elenco: ")
                                             for m in mov_list:
-                                                print( f"{m["descrizione"]} -  importo: {m["importo"]} - data : {m["data"].strftime('%d-%m-%Y %H:%M:%S')} ")
+                                                print( f"{m['descrizione']} -  importo: {m['importo']} - data : {m['data'].strftime('%d-%m-%Y %H:%M:%S')} ")
                                     case 6:
                                         fu.write(cc_founded.__str__() + "\n", f"{cc_founded.numeroConto}.txt", "a")
                                         lista_mov = cc_founded.movimenti
                                         for m in lista_mov:
-                                            fu.write(f"{m["descrizione"]} -  importo: {m["importo"]} - data : {m["data"].strftime('%d-%m-%Y %H:%M:%S')}\n", f"{cc_founded.numeroConto}.txt", "a")
+                                            fu.write(f"{m['descrizione']} -  importo: {m['importo']} - data : {m['data'].strftime('%d-%m-%Y %H:%M:%S')}\n", f"{cc_founded.numeroConto}.txt", "a")
                                         print("File Stampato\n----------------\n")
                                         print(fu.read(f"{cc_founded.numeroConto}.txt"))
                                 
                                     case 7:
                                         print("\n\n")
-                                        print(f"Totale prelevato: {cc_founded.totale_operazione("prelievo")}")
-                                        print(f"Totale depositato: {cc_founded.totale_operazione("deposito")}")
+                                        print(f"Totale prelevato: {cc_founded.totale_operazione('prelievo')}")
+                                        print(f"Totale depositato: {cc_founded.totale_operazione('deposito')}")
                                         mm = cc_founded.max_movimento()
-                                        print(f"Movimento più alto: {mm if mm is not None else "Nessun Movimento Effettuato"}")
+                                        print(f"Movimento più alto: {mm if mm is not None else 'Nessun Movimento Effettuato'}")
                                         print(f"Numero totale di operazioni : {cc_founded.conta_depositi() + cc_founded.conta_prelievi()}")
                                         print("\n\n")
 
@@ -198,16 +198,18 @@ while op != 5:
                                         print ("SALDO DOPO tentativo di addebito automatico:  \n\n")
                                         print(cc_founded.__str__())
                                     case 9:
-                                        numero_conto=int(input("Inserire numero da cercare: "))
-                                        conto2=cerca_conto(numero_conto, list_cc)
-                                        if conto2 is None:
-                                            print("Non esiste un conto con il seguente numero conto.")
-                                        else:
-                                            importo=int(input("Inserire importo: "))
-                                            causale=input("Inserire la causale: ")
-                                            cc_founded.bonifico(conto2, importo, causale)
-                                            cc_founded.mostra_movimenti()
-                                            conto2.mostra_movimenti()
+                                        conto2 = None
+                                        while conto2 is None:
+                                            numero_conto=int(input("Inserire numero da cercare: "))
+                                            conto2=cerca_conto(numero_conto, list_cc)
+                                            if conto2 is None:
+                                                print("Non esiste un conto con il seguente numero conto.")
+                                            else:
+                                                importo=int(input("Inserire importo: "))
+                                                causale=input("Inserire la causale: ")
+                                                cc_founded.bonifico(conto2, importo, causale)
+                                                cc_founded.mostra_movimenti()
+                                                conto2.mostra_movimenti()
                                     case 10:
                                         print("USCITA DAL SOFTWARE")
                                     case _:
@@ -241,6 +243,15 @@ while op != 5:
 
                     for x in list_cc:
                         print(x.__str__())
+            case 5:
+                search=input("Inserire cognome da ricercare: ")
+                clienti_filtered=list(filter(lambda x : x.cognome.lower() == search.lower(), clienti))
+                if len(clienti_filtered) > 0:
+                    print("Risultati trovati:", len(clienti_filtered))
+                    for c in clienti_filtered:
+                        print(c.get_nome_completo())
+                else:
+                    print("Nessun cliente trovato")
             case __:
                 print("USCITA DAL SOFTWARE")
 

@@ -72,7 +72,7 @@ class ContoCorrente:
             print(f"Lista movimenti di {self.numeroConto}:")
             for m in self.movimenti:
                 print(
-                    f"{m["descrizione"]} -  importo: {m["importo"]} - data : {m["data"].strftime('%d-%m-%Y %H:%M:%S')} "
+                    f"{m['descrizione']} -  importo: {m['importo']} - data : {m['data'].strftime('%d-%m-%Y %H:%M:%S')} "
                 )
         else:
             print("Nessun movimento da visualizzare")
@@ -170,7 +170,7 @@ class ContoCorrente:
 
                 if m["importo"] > max_op:
                     max_op = m["importo"]
-                    op = f"{m["descrizione"]} -  importo: {m["importo"]} - data : {m["data"].strftime('%d-%m-%Y %H:%M:%S')} "
+                    op = f"{m['descrizione']} -  importo: {m['importo']} - data : {m['data'].strftime('%d-%m-%Y %H:%M:%S')} "
         return op
 
     def addebito_automatico(self, importo, descrizione):
