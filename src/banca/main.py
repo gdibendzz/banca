@@ -3,8 +3,6 @@ from unittest import case
 import models.conto_corrente as cc
 import models.conto_cointestato as cci
 import utils.file_utils as fu
-import utils.method_utils as mu
-
 
 '''
 numeroc=mu.generatore_numero_conto()
@@ -126,7 +124,7 @@ while op != 5:
 
                         while op != 10 and not cc_founded.bloccato:
                             try:
-                                op=int(input("Seleziona l'operazione che vuoi effettuare \n" \
+                                op=int(input("\nSeleziona l'operazione che vuoi effettuare \n" \
                                 "1. Per depositare \n" \
                                 "2. Per prelevare \n" \
                                 "3. Per mostrare il saldo \n" \
@@ -162,20 +160,20 @@ while op != 5:
                                             print("La lista è vuota")
                                         else:
                                             print("Elenco: ")
-                                            for x in mov_list:
-                                                print(x)
+                                            for m in mov_list:
+                                                print( f"{m["descrizione"]} -  importo: {m["importo"]} - data : {m["data"].strftime('%d-%m-%Y %H:%M:%S')} ")
                                     case 6:
-                                        fu.write(cc_founded.__str__(), f"{cc_founded.numeroConto}.txt", "a")
+                                        fu.write(cc_founded.__str__() + "\n", f"{cc_founded.numeroConto}.txt", "a")
                                         lista_mov = cc_founded.movimenti
                                         for m in lista_mov:
-                                            fu.write(m+"\n", f"{cc_founded.numeroConto}.txt", "a")
+                                            fu.write(f"{m["descrizione"]} -  importo: {m["importo"]} - data : {m["data"].strftime('%d-%m-%Y %H:%M:%S')}\n", f"{cc_founded.numeroConto}.txt", "a")
                                         print("File Stampato\n----------------\n")
                                         print(fu.read(f"{cc_founded.numeroConto}.txt"))
                                 
                                     case 7:
                                         print("\n\n")
-                                        print(f"Totale prelevato: {cc_founded.totale_operazione("Prelievo")}")
-                                        print(f"Totale depositato: {cc_founded.totale_operazione("Deposito")}")
+                                        print(f"Totale prelevato: {cc_founded.totale_operazione("prelievo")}")
+                                        print(f"Totale depositato: {cc_founded.totale_operazione("deposito")}")
                                         mm = cc_founded.max_movimento()
                                         print(f"Movimento più alto: {mm if mm is not None else "Nessun Movimento Effettuato"}")
                                         print(f"Numero totale di operazioni : {cc_founded.conta_depositi() + cc_founded.conta_prelievi()}")
@@ -197,10 +195,8 @@ while op != 5:
                                             cc_founded.addebito_automatico(importo, descrizione)
                                             print("Addebito automatico effettuato con successo")
 
-                                        print ("SALDO DOPO tentativo diaddebito automatico:  \n\n")
+                                        print ("SALDO DOPO tentativo di addebito automatico:  \n\n")
                                         print(cc_founded.__str__())
-
-                                                    
                                     case 9:
                                         numero_conto=int(input("Inserire numero da cercare: "))
                                         conto2=cerca_conto(numero_conto, list_cc)

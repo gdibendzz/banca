@@ -21,7 +21,14 @@ class ContoCorrente:
             print("Non si può depositare un importo negativo o zero")
         else:
             self.saldo += importo
-            self.movimenti.append(f"Deposito di {importo} euro, data movimento: {datetime.now()}")
+            self.movimenti.append(
+                {
+                    "tipo": "deposito",
+                    "importo": importo,
+                    "descrizione": "Versamento Contanti",
+                    "data": datetime.now(),
+                }
+            )
 
     def preleva(self, importo):
         if self.bloccato == True:
@@ -38,9 +45,21 @@ class ContoCorrente:
             elif importo % 10 == 0 or importo % 20 == 0:
                 self.saldo -= importo + self.commissione
                 self.prelievo_giornaliero -= importo
-                self.movimenti.append(f"Prelievo di {importo} euro")
                 self.movimenti.append(
-                    f"Commissione applicata di {self.commissione} euro"
+                    {
+                        "tipo": "prelievo",
+                        "importo": importo,
+                        "descrizione": "Prelievo Contanti",
+                        "data": datetime.now(),
+                    }
+                )
+                self.movimenti.append(
+                    {
+                        "tipo": "commissione",
+                        "importo": self.commissione,
+                        "descrizione": "Commissione applicata",
+                        "data": datetime.now(),
+                    }
                 )
             else:
                 print("Impossibile effettuare la seguente operazione")
@@ -52,21 +71,34 @@ class ContoCorrente:
         if len(self.movimenti) > 0:
             print(f"Lista movimenti di {self.numeroConto}:")
             for m in self.movimenti:
-                print(m)
+                print(
+                    f"{m["descrizione"]} -  importo: {m["importo"]} - data : {m["data"].strftime('%d-%m-%Y %H:%M:%S')} "
+                )
         else:
             print("Nessun movimento da visualizzare")
 
     def bonifico(self, conto_destinazione, importo, causale):
         if self.bloccato == True:
             print("Conto bloccato. Impossibile effettuare il bonifico")
+        elif self.saldo - importo < -self.fido:
+            print("Non puoi prelevare più del fido")
         else:
-            self.preleva(importo)
             self.movimenti.append(
-                f"Bonifico di {importo} euro effettuato a {conto_destinazione.numeroConto} - Causale: {causale}, data movimento: {datetime.now()}"
+                {
+                    "tipo": "bonifico",
+                    "importo": importo,
+                    "descrizione": f"Bonifico effettuato - causale:  {causale}",
+                    "data": datetime.now(),
+                }
             )
-            conto_destinazione.deposita(importo)
+            conto_destinazione.saldo += importo
             conto_destinazione.movimenti.append(
-                f"Bonifico di {importo} euro ricevuto da {self.numeroConto} - Causale: {causale}, data movimento: {datetime.now()}"
+                {
+                    "tipo": "bonifico",
+                    "importo": importo,
+                    "descrizione": f"Bonifico ricevuto - causale:  {causale}",
+                    "data": datetime.now(),
+                }
             )
 
     def cerca_da_numero(self, numero):
@@ -95,7 +127,7 @@ class ContoCorrente:
         cd = 0
         if len(self.movimenti) > 0:
             for m in self.movimenti:
-                if m.startswith("Deposito"):
+                if m["tipo"] == "deposito":
                     cd += 1
         return cd
 
@@ -103,40 +135,54 @@ class ContoCorrente:
         cp = 0
         if len(self.movimenti) > 0:
             for m in self.movimenti:
-                if m.startswith("Prelievo"):
+                if m["tipo"] == "prelievo":
                     cp += 1
         return cp
 
     def findByWord(self, word):
-        return list(filter(lambda x: word.lower() in x.lower(), self.movimenti))
+        return list(
+            filter(lambda x: word.lower() in x["descrizione"].lower(), self.movimenti)
+        )
 
     def totale_operazione(self, operazione):
         total = 0
-        m_validi = list(filter( lambda  m : m.startswith(operazione) ,  self.movimenti))
+        m_validi = list(filter(lambda m: m["tipo"] == operazione, self.movimenti))
         if len(m_validi) > 0:
-            for m in m_validi:
-                words = m.split(" ")
-                print(f"words: {words[2]}")
-                total += float(words[2])
+            total = sum([m["importo"] for m in m_validi] )
         return total
 
     def max_movimento(self):
         max_op = 0
         op = None
-        m_validi = list(filter( lambda  m : (m.startswith("Deposito") or m.startswith("Prelievo")), self.movimenti))
+        m_validi = list(
+            filter(
+                lambda m: (
+                    m["tipo"] == "deposito"
+                    or m["tipo"] == "prelievo"
+                    or m["tipo"] == "bonifico"
+                    or m["tipo"] == "addebito"
+                ),
+                self.movimenti,
+            )
+        )
         if len(m_validi) > 0:
             for m in m_validi:
-                words = m.split(" ")
-                op_sum = float(words[2])
-                if op_sum > max_op:
-                    max_op = op_sum
-                    op = m
+
+                if m["importo"] > max_op:
+                    max_op = m["importo"]
+                    op = f"{m["descrizione"]} -  importo: {m["importo"]} - data : {m["data"].strftime('%d-%m-%Y %H:%M:%S')} "
         return op
 
-    def addebito_automatico(self,importo, descrizione):
+    def addebito_automatico(self, importo, descrizione):
         self.saldo -= importo
-        self.movimenti.append(f"Addebito automatico di {importo} euro per {descrizione}, data movimento: {datetime.now()}")
-
+        self.movimenti.append(
+            {
+                "tipo": "addebito",
+                "importo": importo,
+                "descrizione": f"Addebito automatico per {descrizione}",
+                "data": datetime.now(),
+            }
+        )
 
     def __str__(self):
         blocked = "true" if self.bloccato else "false"
