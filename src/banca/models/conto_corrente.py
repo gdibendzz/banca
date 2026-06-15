@@ -116,7 +116,8 @@ class ContoCorrente:
         if len(m_validi) > 0:
             for m in m_validi:
                 words = m.split(" ")
-                total += int(words[2])
+                print(f"words: {words[2]}")
+                total += float(words[2])
         return total
 
     def max_movimento(self):
@@ -126,7 +127,7 @@ class ContoCorrente:
         if len(m_validi) > 0:
             for m in m_validi:
                 words = m.split(" ")
-                op_sum = int(words[2])
+                op_sum = float(words[2])
                 if op_sum > max_op:
                     max_op = op_sum
                     op = m
