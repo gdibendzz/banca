@@ -62,11 +62,11 @@ class ContoCorrente:
         else:
             self.preleva(importo)
             self.movimenti.append(
-                f"Bonifico effettuato a {conto_destinazione.numeroConto} - Causale: {causale}"
+                f"Bonifico di {importo} euro effettuato a {conto_destinazione.numeroConto} - Causale: {causale}, data movimento: {datetime.now()}"
             )
             conto_destinazione.deposita(importo)
             conto_destinazione.movimenti.append(
-                f"Bonifico ricevuto da {self.numeroConto} - Causale: {causale}"
+                f"Bonifico di {importo} euro ricevuto da {self.numeroConto} - Causale: {causale}, data movimento: {datetime.now()}"
             )
 
     def cerca_da_numero(self, numero):

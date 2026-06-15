@@ -15,6 +15,16 @@ d={
         f"{cc2.numeroConto}": cc2
    }
 '''
+
+def cerca_conto(numero, lista: list[cc.ContoCorrente]):
+    conto_trovato=None
+    for l in lista:
+        if l.cerca_da_numero(numero):
+            conto_trovato=l
+    return conto_trovato
+
+
+
 list_cc=[]
 
 op = 0
@@ -114,7 +124,7 @@ while op != 5:
                                 cc_founded.blocca_conto()
                 
 
-                        while op != 9 and not cc_founded.bloccato:
+                        while op != 10 and not cc_founded.bloccato:
                             try:
                                 op=int(input("Seleziona l'operazione che vuoi effettuare \n" \
                                 "1. Per depositare \n" \
@@ -125,7 +135,8 @@ while op != 5:
                                 "6. Salva i movimenti \n"  \
                                 "7. Statistiche conto \n"  \
                                 "8. Scala addebiti automatici \n"  \
-                                "9. Per uscire\n"))
+                                "9. Effettua un bonifico \n"  \
+                                "10. Per uscire\n"))
 
                                 if op < 0:
                                         raise ValueError
@@ -188,8 +199,22 @@ while op != 5:
 
                                         print ("SALDO DOPO tentativo diaddebito automatico:  \n\n")
                                         print(cc_founded.__str__())
-                                    case _:
+
+                                                    
+                                    case 9:
+                                        numero_conto=int(input("Inserire numero da cercare: "))
+                                        conto2=cerca_conto(numero_conto, list_cc)
+                                        if conto2 is None:
+                                            print("Non esiste un conto con il seguente numero conto.")
+                                        else:
+                                            importo=int(input("Inserire importo: "))
+                                            causale=input("Inserire la causale: ")
+                                            cc_founded.bonifico(conto2, importo, causale)
+                                            cc_founded.mostra_movimenti()
+                                            conto2.mostra_movimenti()
+                                    case 10:
                                         print("USCITA DAL SOFTWARE")
+                                    case _:
                                         pass
                             except ValueError:    
                                 print("Il numero del conto deve essere un numero positivo\n \n")
